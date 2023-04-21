@@ -11,6 +11,7 @@ export default function Home() {
 
   //const [personType, setPersonTypeInput] = useState("");
   const [youtube, setYouTube] = useState(null);
+  const [youtubeEmb, setYouTubeEmb] = useState(null);
   const [result0, setResult0] = useState(null);
   const [result1, setResult1] = useState();
 
@@ -58,6 +59,7 @@ export default function Home() {
     setResult0(data.first);
     setResult1(data.result);
     setYouTube(data.youtube);
+    setYouTubeEmb(data.youtubeEmbed);
       
      // setAnimalInput("");
     } catch(error) {
@@ -138,9 +140,22 @@ export default function Home() {
           { !inProgress &&  
               <div className={styles.center}>
               <h3><div className={styles.result}><a href={youtube}>{result0}</a></div></h3>
+              </div>
+          }
+
+          { (!inProgress && youtubeEmb) &&  
+              <div className={styles.center}>
+                <iframe width="420" height="315"
+                    src={youtubeEmb}>
+                </iframe>
+              </div>
+          }
+
+          { !inProgress &&  
+              <div className={styles.center}>
               <div className={styles.result}>{result1}</div>
               </div>
-        }
+          }
         
       </main>
     </div>
