@@ -17,7 +17,7 @@ export default async function (req, res) {
     return;
   }
 
-  const personType = req.body.personType || '';
+  const personType = req.body.personType || 'entreprenuer ceo';
   if (personType.trim().length === 0) {
     res.status(400).json({
       error: {
@@ -29,20 +29,31 @@ export default async function (req, res) {
 
   try {
     const prompt1 = generatePrompt(personType);
+
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [{"role": "system", "content": prompt1}] ,
       temperature: 0.6,
     }); 
 
-    const resp = completion.data.choices[0].message.content.split(".\"");
-    const q = resp[0].replace("\"", "");
-    const rest = resp.slice(1);
-    const youtube1 = "https://www.youtube.com/results?search_query=" + q;
-    const html = await fetchHtml(youtube1);
-    const youtubeLink = getYoutubeLink(html);
 
-    res.status(200).json({ result: rest, first: q, youtube: youtube1, youtubeEmbed: youtubeLink});
+    const resp = completion.data.choices[0].message.content.split("\n");
+    const created1 = resp[0].split(".")[0].replace("\"", "");
+    let q = resp.slice(1).join('').replace("\"", "");
+    const rest = ""
+
+    const youtube1 = "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+    const html = await fetchHtml(youtube1);
+    const youtubeLink = getYoutubeLink(html); 
+
+    /*
+    const q = "Serena Williams, The Champion's Mindset book";
+    const rest = "";
+    const youtube1 = "https://www.youtube.com/results?search_query=%20%0ASerena%20Williams%2C%20%22The%20Champion's%20Mindset%22%20book";
+    const youtubeLink = "https://www.youtube.com/embed/In_CsRu3H88";
+    const created1 = "Success is not a destination, it's a journey of hard work and perseverance.";*/
+
+    res.status(200).json({ result: rest, first: q, youtube: youtube1, youtubeEmbed: youtubeLink, created: created1});
   } catch(error) {
     // Consider adjusting the error handling logic for your use case
     if (error.response) {
@@ -72,10 +83,14 @@ function getYoutubeLink(html) {
     const searchReturnArr = script.textContent.match(/var ytInitialData = (\{.+\});/);
 
     if (searchReturnArr && searchReturnArr.length > 1) {
-      const jsonData = searchReturnArr[1];
-      const data = JSON.parse(jsonData);
-      let video = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].videoRenderer.videoId;
-      res = "https://www.youtube.com/embed/" + video;
+      try {
+        const jsonData = searchReturnArr[1];
+        const data = JSON.parse(jsonData);
+        let video = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].videoRenderer.videoId;
+        res = "https://www.youtube.com/embed/" + video;
+      } catch (error) {
+        console.log(error)
+      }
     }
 
   });
@@ -90,6 +105,6 @@ async function fetchHtml(url) {
 }
 
 function generatePrompt(personType) {
-  return `Suggest one motivational talks, speech, album, or content from a famous ${personType}. In the first sentence please give in the simple format of (note inside quotes and ending with a period): "[person] [title]." Then you can describe more if needed in the second sentence.`;
+  return `You are a fictional famous famous ${personType}. Generate a motivational saying from scratch just one sentence. And then suggest one talks, speech, album, or content from a real famous person similar you. Make the response of the format: [made up saying]. [new space] [real person], [title of their content].`;
 }
 
