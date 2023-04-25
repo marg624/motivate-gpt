@@ -41,14 +41,15 @@ function InfoOverlay(props) {
             { props.result0 &&  
                 <div>
                 <h2 className="text-xl md:text-3xl font-bold"><br/><br/>Don't trust me? Here's some words from a fellow human...</h2>
+                <br/>
                 <a className="text-l md:text-xl font-bold" href={props.youtube}>{props.result0}</a>
                 </div>
             }
 
             { props.youtubeEmb &&  
                 <div>
-                  <iframe width="420" height="315"
-                      src={props.youtubeEmb}>
+                  <iframe width="400" height="300"
+                      src={props.youtubeEmb} allowfullscreen>
                   </iframe>
                 </div>
             }
