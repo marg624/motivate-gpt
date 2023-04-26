@@ -42,6 +42,10 @@ export default async function (req, res) {
     let q = resp.slice(1).join('').replace("\"", "");
     const rest = ""
 
+    if (!q) {
+      console.log(completion.data.choices[0].message.content)
+    }
+
     const youtube1 = "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
     const html = await fetchHtml(youtube1);
     const youtubeLink = getYoutubeLink(html); 

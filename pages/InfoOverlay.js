@@ -48,7 +48,7 @@ function InfoOverlay(props) {
 
             { props.youtubeEmb &&  
                 <div>
-                  <iframe width="400" height="300"
+                  <iframe className="resize"
                       src={props.youtubeEmb} allowfullscreen>
                   </iframe>
                 </div>
